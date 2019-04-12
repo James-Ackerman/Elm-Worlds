@@ -312,7 +312,7 @@ void Noslackmove(int distance)
   int  current_speedL;
   int thresholdL;
   bool endTaskL;
-
+boo
   void LeftCorrect(void*param)
   {
     lineL = 900;
@@ -320,10 +320,10 @@ void Noslackmove(int distance)
     current_speedL = 5000;
     endTaskL = false;
     thresholdL = 500;
-
+    
     while(1)
     {
-      baseR.moveVoltage(current_speedL);
+      baseL.moveVoltage(current_speedL);
       if (current_speedL < thresholdL)
         {
           endTaskL = true;
@@ -344,10 +344,11 @@ void Noslackmove(int distance)
       if (passedLineL == true && (driveL.getActualVelocity() > 0))
       {
         current_speedL = -current_speedL/2;
+        
       }
-      if (passedLineR == true && (driveL.getActualVelocity() < 0))
+      if (passedLineL == true && (driveL.getActualVelocity() < 0))
       {
-        current_speedL = -abs(current_speedL/2);
+        current_speedL = abs(current_speedL/2);
       }
       pros::Task::delay(20);
     }
@@ -395,7 +396,7 @@ void RightCorrect(void*param)
     }
     if (passedLineR == true && (driveR.getActualVelocity() < 0))
     {
-      current_speedR = -abs(current_speedR/2);
+      current_speedR = abs(current_speedR/2);
     }
     pros::Task::delay(20);
   }
