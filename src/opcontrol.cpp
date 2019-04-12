@@ -21,8 +21,10 @@ void opcontrol()
      ////////////////////////////////////LCD////////////////////////////////////
      //pros::lcd::print(2, "GYRO 1: %f\n", gyro1.get());
      //pros::lcd::print(3, "GYRO 2: %f\n", -1*gyro2.get());
-     pros::lcd::print(2, "LINE_TRACKER_RIGHT: %.d\n", linetrackerL.get_value());
-     pros::lcd::print(3, "LINE_TRACKER_LEFT: %.d\n", linetrackerL.get_value());
+     // pros::lcd::print(2, "LINE_TRACKER_RIGHT: %.d\n", linetrackerL.get_value());
+     // pros::lcd::print(3, "LINE_TRACKER_LEFT: %.d\n", linetrackerL.get_value());
+     pros::lcd::print(2, "PROXIMITY_TOP: %d\n", ProxTOP.get_value());
+     pros::lcd::print(2, "SHIFTER_TOGGLE: %d\n", SHIFTER_TOGGLE);
      pros::lcd::print(4, "GYRO COMBINED: %f\n", (((-1*gyro2.get())+gyro1.get())/2));
      pros::lcd::print(6, "Battery Level: %f\n", pros::battery::get_capacity());
 
@@ -45,6 +47,54 @@ void opcontrol()
      if (ButtonA.changedToPressed())
      {
          SHIFTER_TOGGLE =! SHIFTER_TOGGLE;
+     }
+
+     if (ButtonDOWN.changedToPressed())          //Flywheel MID conditions
+     {
+       //gain = 0.1;
+       SHIFTER_TOGGLE = 1;
+       while((ProxTOP.get_value() == 0) && SHIFTER_TOGGLE == 1)
+       {
+         indexer.move_voltage(-12000);
+         intake.move_voltage(12000);     //maybe negative
+         if (ButtonA.changedToPressed())
+         {
+           SHIFTER_TOGGLE = 0;
+         }
+         else;
+       }
+       while((ProxTOP.get_value() == 1)  && SHIFTER_TOGGLE == 1)
+       {
+         if (ButtonA.changedToPressed())
+         {
+           SHIFTER_TOGGLE = 0;
+         }
+         else;
+       }
+
+       pistonS.set_value(HIGH);
+       pros::delay(150);
+
+       while((ProxTOP.get_value() == 0)  && SHIFTER_TOGGLE == 1)
+       {
+         if (ButtonA.changedToPressed())
+         {
+           SHIFTER_TOGGLE = 0;
+         }
+         else;
+       }
+       while((ProxTOP.get_value() == 1) && SHIFTER_TOGGLE == 1)
+       {
+         if (ButtonA.changedToPressed())
+         {
+           SHIFTER_TOGGLE = 0;
+         }
+         else;
+       }
+       pistonS.set_value(LOW);
+
+       indexer.move_voltage(0);
+       intake.move_voltage(0);
      }
 
      //////////////////////////////////INTAKE///////////////////////////////////
@@ -82,6 +132,20 @@ void opcontrol()
          intake.move_voltage(0);
          roller.move_voltage(0);
      }
+     ////////////////////////////////INDEXER///////////////////////////////////
+
+          if (LeftBumperUP.isPressed())                //Hold button to use indexer
+          {
+              indexer.move_voltage(-12000);
+          }
+          else if (LeftBumperDOWN.isPressed())                //Hold button to use indexer
+          {
+              indexer.move_voltage(12000);
+          }
+          else
+          {
+              indexer.move_voltage(0);
+          }
 
       ////////////////////////////////FLYWHEEL//////////////////////////////////
       gain = 0.0013;

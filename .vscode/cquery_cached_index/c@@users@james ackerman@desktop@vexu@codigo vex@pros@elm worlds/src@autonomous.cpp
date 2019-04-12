@@ -10,11 +10,11 @@ flywheel.setGearing(AbstractMotor::gearset::blue);
 // pros::delay(200);
 // driveController.stop();
 //lineFW_NEW(15, 10, 900);                                   //(movepower (%), fixpower(%), line (linetracker sensor value))
-pros::Task RightCorrectTask(RightCorrect);
-pros::Task LeftCorrectTask(LeftCorrect);
-while((endTaskL == false) || (endTaskR == false));
-RightCorrectTask.remove();
-LeftCorrectTask.remove();
+// pros::Task RightCorrectTask(RightCorrect);
+// pros::Task LeftCorrectTask(LeftCorrect);
+// while((endTaskL == false) || (endTaskR == false));
+// RightCorrectTask.remove();
+// LeftCorrectTask.remove();
 
 
 
