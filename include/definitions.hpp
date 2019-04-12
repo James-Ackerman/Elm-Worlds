@@ -61,7 +61,7 @@ inline auto driveController = ChassisControllerFactory::create(
   );
 
 //Individual motor definitions (for easy voltage control)
-inline Motor driveR(DRIVE_MOTOR_LEFT_2);
+inline Motor driveR(DRIVE_MOTOR_RIGHT_2);
 inline Motor driveL(DRIVE_MOTOR_LEFT_2);
 inline Motor driver(DRIVE_MOTOR_RIGHT_2);
 inline Motor flywheel(FLYWHEEL_MOTOR, true, AbstractMotor::gearset::blue);	  		//motor on FLYWHEEL_MOTOR port
@@ -94,8 +94,9 @@ extern int  current_speedR;
 extern int thresholdR;
 extern bool endTaskR;
 
+extern bool pgfLeft;
+extern bool pgbLeft;
 extern int  lineL;
-extern bool passedLineL;
 extern int  current_speedL;
 extern int thresholdL;
 extern bool endTaskL;
@@ -111,8 +112,9 @@ void Noslackturn(int, int, int);
 void PIDGyroTurn( int, QTime, float, float, float, float);
 void lineFW_NEW(float, float, int);
 void lineFW_OLD(float, float, int);
-void RightCorrect(void*param);
-void LeftCorrect(void*param);
+void alignWithLine(int, int, int);
+// void RightCorrect(void*param);
+// void LeftCorrect(void*param);
 //
 inline ControllerButton RightBumperUP(ControllerDigital::R1);
 inline ControllerButton RightBumperDOWN(ControllerDigital::R2);

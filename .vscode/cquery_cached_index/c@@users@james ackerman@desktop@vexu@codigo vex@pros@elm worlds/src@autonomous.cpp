@@ -5,16 +5,17 @@ void autonomous() {
 pros::lcd::set_text(7, "AUTONOMOUS");
 pros::Task FwControl(FwControlTask);
 flywheel.setGearing(AbstractMotor::gearset::blue);
+PIDGyroTurn(90, 1000_ms, 0.8, 0.0028, 0.002, 0.003);
 /////////////////////////////AUTONOMOUS RED//////////////////////////////////////////////////////////////////////////////////////////////////////////
 // driveController.forward(0.2);
 // pros::delay(200);
 // driveController.stop();
-//lineFW_NEW(15, 10, 900);                                   //(movepower (%), fixpower(%), line (linetracker sensor value))
-pros::Task RightCorrectTask(RightCorrect);
-pros::Task LeftCorrectTask(LeftCorrect);
-while((endTaskL == false) || (endTaskR == false));
-RightCorrectTask.remove();
-LeftCorrectTask.remove();
+//lineFW_OLD(30, 20, 900);                                   //(movepower (%), fixpower(%), line (linetracker sensor value))
+//alignWithLine(100, 900, 2); // WORKING FOR VELOCITY < 100, LINE = 900, alignSteps = 2
+// pros::Task LeftCorrectTask(LeftCorrect);
+// while(endTaskL == false); //&& (endTaskR == true));
+// //RightCorrectTask.remove();
+// LeftCorrectTask.remove();
 
 
 

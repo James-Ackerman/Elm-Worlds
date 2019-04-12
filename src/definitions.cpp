@@ -97,13 +97,13 @@ void FwControlTask(void* param)
 
 
 //PID turn with gyro
-void PIDGyroTurn(int target, QTime waitTime, float maxPower = 0.8, float Kp = 0.0003, float Ki = 0.075, float Kd = 0.6)  //Estos valores eran para cuando los motores iban a 127.
+void PIDGyroTurn(int target, QTime waitTime, float maxPower = 0.8, float Kp = 0.00028, float Ki = 0, float Kd = 0)  //Estos valores eran para cuando los motores iban a 127.
  {
    //	float Kp = 0.2;             // Para girar con el brazo abajo sin peso: Kp = 0.2, Ki = 0.05, Kd = 0.5
    //	float Ki = 0.05;            // Para girar con el brazo a mitad sin peso: Kp = 0.15, Ki = 0.075, Kd = 0.6
    //	float Kd = 0.5;             // Se puede hacer una funcion que dependa de los potenciometros del brazo para ajustar las variables del PID si es necesario^^
 
-   int error;
+   float error;
    float proportion;
    int integralRaw;
    float integral;
@@ -112,7 +112,7 @@ void PIDGyroTurn(int target, QTime waitTime, float maxPower = 0.8, float Kp = 0.
 
    float integralActiveZone = 5;        // Valor del gyro cerca del target para que empieze a trabajar el integral
    float integralPowerLimit = 0.5;       // Limite de power que utiliza el integral (ocurre cuando el robot esta en el integralActiveZone) SE NECESITA TUNING (cambiar el 50)
-   int finalPower;
+   float finalPower;
 
    Timer timer;
    timer.placeMark();
@@ -162,16 +162,17 @@ void PIDGyroTurn(int target, QTime waitTime, float maxPower = 0.8, float Kp = 0.
        finalPower = -maxPower;
      }
 
-     driveController.rotate(finalPower);
+     printf("error = %f, final power = %f\n", error, finalPower);
+     driveController.rotate(-finalPower);
 
      pros::delay(20);
 
-     // if (error > 3) //Error depende #tuning              //Cuando entra a la zona cerca del valor que quieres
-     // {
-     //                                                //comienza a correr el timer para que no este en
-     //      timer.clearMark();
-     //      timer.placeMark();
-     // }
+     if (error > 3) //Error depende #tuning              //Cuando entra a la zona cerca del valor que quieres
+     {
+                                                    //comienza a correr el timer para que no este en
+          timer.clearMark();
+          timer.placeMark();
+     }
    }
    driveController.stop();
  }
@@ -232,23 +233,62 @@ void Noslackmove(int distance)
 }
 
 
+void alignStep(int vel, int line) {
+  bool seenLineR = false;
+  bool seenLineL = false;
+  driveControllerR.setTarget(vel);
+  driveControllerL.setTarget(vel);
+  while (!seenLineR || !seenLineL) {
+    if (linetrackerR.get_value() < line && !seenLineR) {
+      seenLineR = true;
+      printf("LINE RIGTH at vel %f\n", driveR.getActualVelocity());
+    }
+    if (linetrackerL.get_value() < line && !seenLineL) {
+      seenLineL = true;
+      printf("LINE LEFT at vel %f\n", driveL.getActualVelocity());
+    }
+    if (seenLineR) {
+      driveControllerR.setTarget(0);
+    }
+    if (seenLineL) {
+      driveControllerL.setTarget(0);
+    }
+  }
+  driveControllerR.setTarget(0);
+  driveControllerL.setTarget(0);
+}
+
+void alignWithLine(int vel, int line, int alignSteps) {
+  alignStep(vel, line);
+  int fixvel = vel > 0 ? 30 : -30;
+  for (int i = 0; i < alignSteps; i++) {
+    if (!i%2) {
+      fixvel = -fixvel;
+    }
+    alignStep(fixvel, line);
+  }
+}
+
+
 //DELETE IF NEW ONE WORKS
   void lineFW_OLD(float movepower, float fixpower, int line = 900)   //Powers are from 1 to -1
   {
-    while(linetrackerL.get_value() > line || linetrackerR.get_value() > line)
+    movepower = movepower*0.01;
+    fixpower = fixpower*0.01;
+    driveController.forward(movepower);
+    while((linetrackerL.get_value() > line) || (linetrackerR.get_value() > line))
   	{
-              driveController.forward(movepower);
 
-      	while(linetrackerL.get_value() > line && linetrackerR.get_value() < line)
+      	while((linetrackerL.get_value() > line) && (linetrackerR.get_value() < line))
       	{
-      			driveController.right(-fixpower);
+      			driveController.right(-fixpower*0.1);
             driveController.left(fixpower);
       	}
         //
-        while(linetrackerL.get_value() < line && linetrackerR.get_value() > line)
+        while((linetrackerL.get_value() < line) && (linetrackerR.get_value() > line))
       	{
           driveController.right(fixpower);
-          driveController.left(-fixpower);
+          driveController.left(-fixpower*0.1);
       	}
   	}
     driveController.stop();
@@ -261,8 +301,8 @@ void Noslackmove(int distance)
     bool rightDetection = false;
     movepower = movepower*0.01;
     fixpower = fixpower*0.01;
-    driveControllerL.setTarget(40);                                                 //Move left side
-    driveControllerR.setTarget(40);                                                 //Move left side
+    driveControllerL.setTarget(60);                                                 //Move left side
+    driveControllerR.setTarget(60);                                                 //Move left side
     while (rightDetection == false  || leftDetection == false)        //While the line is not being detected by any side
     {
 
@@ -274,20 +314,25 @@ void Noslackmove(int distance)
       if ((linetrackerL.get_value() < line) && (leftDetection == false))       //if line is detected by right side
       {
         leftDetection = true;
-        //printf("DETECTED LEFT: %.d\n", leftDetection);
+        printf("-------------DETECTED LEFT: %.d\n", leftDetection);
       }
-
       if ((rightDetection == true) && (leftDetection == false))       //if line is detected by left side
       {
         driveControllerR.setTarget(0);                                                  //Brake right side
-        driveControllerL.setTarget(40);                                                 //Move left side
+        driveControllerL.setTarget(40);
+        if(linetrackerR.get_value() > line )
+        {
+          rightDetection = false;
+          driveControllerR.setTarget(-30);
+        }                                                 //Move left side
       }
       else if ((leftDetection == true) && (rightDetection == false))  //if line is detected by left side
       {
         driveControllerL.setTarget(0);                                                  //Brake left side
         driveControllerR.setTarget(40);                                                 //Move right side
-        while (linetrackerL.get_value() > line )
+        if(linetrackerL.get_value() > line )
         {
+          leftDetection = false;
           driveControllerL.setTarget(-30);
         }
       }
@@ -307,96 +352,72 @@ void Noslackmove(int distance)
   }
 
 
-  int  lineL;
-  bool passedLineL;
-  int  current_speedL;
-  int thresholdL;
-  bool endTaskL;
-
-  void LeftCorrect(void*param)
-  {
-    lineL = 900;
-    passedLineL = false;
-    current_speedL = 5000;
-    endTaskL = false;
-    thresholdL = 500;
-
-    while(1)
-    {
-      baseL.moveVoltage(current_speedL);
-      if (current_speedL < thresholdL)
-        {
-          endTaskL = true;
-          break;
-        }
-      if ((linetrackerL.get_value() > lineL) && (passedLineL == true))
-      {
-        passedLineL = false;
-      }
-      else if ((linetrackerL.get_value() < lineL) && (passedLineL == true))
-      {
-        passedLineL = false;
-      }
-      else if ((linetrackerL.get_value() < lineL) && (passedLineL == false))
-      {
-        passedLineL = true;
-      }
-      if (passedLineL == true && (driveL.getActualVelocity() > 0))
-      {
-        current_speedL = -current_speedL/2;
-      }
-      if (passedLineL == true && (driveL.getActualVelocity() < 0))
-      {
-        current_speedL = abs(current_speedL/2);
-      }
-      pros::Task::delay(20);
-    }
-  }
-
-
-
-int  lineR;
-bool passedLineR;
-int  current_speedR;
-int thresholdR;
-bool endTaskR;
-
-void RightCorrect(void*param)
-{
-  lineR = 900;
-  passedLineR = false;
-  current_speedR = 5000;
-  endTaskR = false;
-  thresholdR = 500;
-
-  while(1)
-  {
-    baseR.moveVoltage(current_speedR);
-    if (current_speedR < thresholdR)
-      {
-        endTaskR = true;
-        break;
-      }
-    if ((linetrackerR.get_value() > lineR) && (passedLineR == true))
-    {
-      passedLineR = false;
-    }
-    else if ((linetrackerR.get_value() < lineR) && (passedLineR == true))
-    {
-      passedLineR = false;
-    }
-    else if ((linetrackerR.get_value() < lineR) && (passedLineR == false))
-    {
-      passedLineR = true;
-    }
-    if (passedLineR == true && (driveR.getActualVelocity() > 0))
-    {
-      current_speedR = -current_speedR/2;
-    }
-    if (passedLineR == true && (driveR.getActualVelocity() < 0))
-    {
-      current_speedR = abs(current_speedR/2);
-    }
-    pros::Task::delay(20);
-  }
-}
+  // int  lineL;
+  // bool pgfLeft;
+  // bool pgbLeft;
+  // int  current_speedL;
+  // int threshold = 500;
+  // bool endTaskL;
+  //bool direction;
+  // void LeftCorrect(void*param)
+  // {
+  //   lineL = 900;
+  //   pgfLeft = false;
+  //   pgbLeft = false;
+  //   current_speedL = 5000;
+  //   endTaskL = false;
+  //   while(endTaskL == false)
+  //   {
+  //     printf("pgfLeft: %d\n", pgfLeft);
+  //     printf("-------------pgbLeft: %d\n", pgbLeft);
+  //     printf("vel: %.f\n", driveL.getActualVelocity());
+  //
+  //     baseL.moveVoltage(current_speedL);
+  //
+  //     if (linetrackerL.get_value() <= lineL)
+  //     {
+  //         if(driveL.getActualVelocity() > 0)
+  //         {
+  //           pgfLeft = true;
+  //           pgbLeft = false;
+  //         }
+  //         else if (driveL.getActualVelocity() < 0)
+  //         {
+  //           pgfLeft = false;
+  //           pgbLeft = true;
+  //         }
+  //     }
+  //     if (linetrackerL.get_value() > lineL)
+  //     {
+  //       if(pgfLeft == true)
+  //       {
+  //         if (driveL.getActualVelocity() > 0)
+  //         {
+  //           current_speedL = -(abs(current_speedL/2));
+  //         }
+  //         else if (driveL.getActualVelocity() < 0)
+  //         {
+  //         current_speedL = abs(current_speedL/2);
+  //         }
+  //       }
+  //       else if(pgbLeft == true)
+  //         {
+  //             if (driveL.getActualVelocity() < 0)
+  //             {
+  //               current_speedL = abs(current_speedL/2);
+  //               pgbLeft = false;
+  //             }
+  //             else if (driveL.getActualVelocity() > 0)
+  //             {
+  //             current_speedL = abs(current_speedL/2);
+  //               pgbLeft = false;
+  //             }
+  //         }
+  //       }
+  //     if (current_speedL < threshold) // || driveL.getActualVelocity() = 0
+  //     {
+  //         endTaskL = true;
+  //     }
+  //     pros::Task::delay(20);
+  //   }
+  // }
