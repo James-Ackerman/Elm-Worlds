@@ -53,9 +53,9 @@ inline AbstractMotor::GearsetRatioPair speedTrans = AbstractMotor::gearset::gree
 inline auto driveController = ChassisControllerFactory::create(
    {DRIVE_MOTOR_RIGHT_1, DRIVE_MOTOR_RIGHT_2, DRIVE_MOTOR_RIGHT_3},
    {DRIVE_MOTOR_LEFT_1, DRIVE_MOTOR_LEFT_2, DRIVE_MOTOR_LEFT_3},
-   // IterativePosPIDController::Gains{0, 0, 0},
-   // IterativePosPIDController::Gains{0, 0, 0},
-   // IterativePosPIDController::Gains{0, 0, 0},
+   IterativePosPIDController::Gains{0.000001, 0, 0},
+   IterativePosPIDController::Gains{0, 0, 0},
+   IterativePosPIDController::Gains{0, 0, 0},
    speedTrans,
    {WHEEL_DIAMETER, CHASSIS_WIDTH}
   );

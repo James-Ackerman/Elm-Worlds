@@ -107,7 +107,7 @@ void PIDGyroTurn(float target, QTime waitTime, float maxPower = 0.8, float Kp = 
    float lastError;
    float derivative;
 
-   float integralActiveZone = 5;        // Valor del gyro cerca del target para que empieze a trabajar el integral
+   float integralActiveZone = 2;        // Valor del gyro cerca del target para que empieze a trabajar el integral
    float integralPowerLimit = 0.3;       // Limite de power que utiliza el integral (ocurre cuando el robot esta en el integralActiveZone) SE NECESITA TUNING (cambiar el 50)
    float finalPower;
 
@@ -115,7 +115,7 @@ void PIDGyroTurn(float target, QTime waitTime, float maxPower = 0.8, float Kp = 
    timer.placeMark();
    while (timer.getDtFromMark() < waitTime) //Mientras el timer este menor que
    {
-
+////
      error = target-((((-1*gyro2.get())+gyro1.get())/2));                                                         // P
      proportion = Kp*error;
 
@@ -138,7 +138,6 @@ void PIDGyroTurn(float target, QTime waitTime, float maxPower = 0.8, float Kp = 
      }
 
      integral = Ki*integralRaw;
-//
 
      derivative = Kd*(error-lastError);                                                                           // D
      lastError = error;

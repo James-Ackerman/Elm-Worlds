@@ -5,17 +5,14 @@ void autonomous() {
 pros::lcd::set_text(7, "AUTONOMOUS");
 pros::Task FwControl(FwControlTask);
 flywheel.setGearing(AbstractMotor::gearset::blue);
-PIDGyroTurn(92.72, 1000_ms, 0.8, 0.0069, 0.045, 0.05);
+driveController.moveDistance(2_ft);    //move
+//PIDGyroTurn(92.72, 600_ms, 1.0, 0.0065, 0.06, 0.05);  //Turn 90 degrees
 /////////////////////////////AUTONOMOUS RED//////////////////////////////////////////////////////////////////////////////////////////////////////////
-// driveController.forward(0.2);
-// pros::delay(200);
-// driveController.stop();
-//lineFW_OLD(30, 20, 900);                                   //(movepower (%), fixpower(%), line (linetracker sensor value))
+
 //alignWithLine(100, 900, 2); // WORKING FOR VELOCITY < 100, LINE = 900, alignSteps = 2
 // pros::Task LeftCorrectTask(LeftCorrect);
 // while(endTaskL == false); //&& (endTaskR == true));
-// //RightCorrectTask.remove();
-// LeftCorrectTask.remove();
+
 
 
 
@@ -26,10 +23,10 @@ PIDGyroTurn(92.72, 1000_ms, 0.8, 0.0069, 0.045, 0.05);
   // intake.moveVoltage(-12000);
   // indexer.moveVoltage(1000);
   // roller.moveVoltage(12000);
-  // driveController.moveDistance(-0.4_ft);    //move
+  //driveController.moveDistance(-1_ft);    //move
   // driveController.turnAngle(90_deg);        //turn
   // driveController.setMaxVoltage(7000);      //set max Voltage of controller
-
+  //PIDGyroTurn(92.72, 1000_ms, 0.8, 0.0069, 0.045, 0.05);  //gyro turn with default constants
   // state != state;                           //flip bool for pneumatics
   // sensor.set_value(state);                  //set piston va
   // rotatorController.setTarget(180_deg);     //flip intake
