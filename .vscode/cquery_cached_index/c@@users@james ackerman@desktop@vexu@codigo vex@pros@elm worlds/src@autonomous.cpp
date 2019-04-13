@@ -5,7 +5,7 @@ void autonomous() {
 pros::lcd::set_text(7, "AUTONOMOUS");
 pros::Task FwControl(FwControlTask);
 flywheel.setGearing(AbstractMotor::gearset::blue);
-PIDGyroTurn(90, 1000_ms, 0.8, 0.0028, 0.002, 0.003);
+PIDGyroTurn(92.72, 1000_ms, 0.8, 0.0069, 0.045, 0.05);
 /////////////////////////////AUTONOMOUS RED//////////////////////////////////////////////////////////////////////////////////////////////////////////
 // driveController.forward(0.2);
 // pros::delay(200);

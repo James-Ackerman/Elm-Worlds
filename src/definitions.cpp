@@ -97,21 +97,18 @@ void FwControlTask(void* param)
 
 
 //PID turn with gyro
-void PIDGyroTurn(int target, QTime waitTime, float maxPower = 0.8, float Kp = 0.00028, float Ki = 0, float Kd = 0)  //Estos valores eran para cuando los motores iban a 127.
+void PIDGyroTurn(float target, QTime waitTime, float maxPower = 0.8, float Kp = 0.0069, float Ki = 0.045, float Kd = 0.05)  //Estos valores eran para cuando los motores iban a 127.
  {
-   //	float Kp = 0.2;             // Para girar con el brazo abajo sin peso: Kp = 0.2, Ki = 0.05, Kd = 0.5
-   //	float Ki = 0.05;            // Para girar con el brazo a mitad sin peso: Kp = 0.15, Ki = 0.075, Kd = 0.6
-   //	float Kd = 0.5;             // Se puede hacer una funcion que dependa de los potenciometros del brazo para ajustar las variables del PID si es necesario^^
 
    float error;
    float proportion;
-   int integralRaw;
+   float integralRaw;
    float integral;
-   int lastError;
-   int derivative;
+   float lastError;
+   float derivative;
 
    float integralActiveZone = 5;        // Valor del gyro cerca del target para que empieze a trabajar el integral
-   float integralPowerLimit = 0.5;       // Limite de power que utiliza el integral (ocurre cuando el robot esta en el integralActiveZone) SE NECESITA TUNING (cambiar el 50)
+   float integralPowerLimit = 0.3;       // Limite de power que utiliza el integral (ocurre cuando el robot esta en el integralActiveZone) SE NECESITA TUNING (cambiar el 50)
    float finalPower;
 
    Timer timer;
@@ -141,7 +138,7 @@ void PIDGyroTurn(int target, QTime waitTime, float maxPower = 0.8, float Kp = 0.
      }
 
      integral = Ki*integralRaw;
-
+//
 
      derivative = Kd*(error-lastError);                                                                           // D
      lastError = error;
@@ -161,13 +158,13 @@ void PIDGyroTurn(int target, QTime waitTime, float maxPower = 0.8, float Kp = 0.
      {
        finalPower = -maxPower;
      }
-
+//
      printf("error = %f, final power = %f\n", error, finalPower);
+     printf("-------------------------------integral = %f, derivative = %f\n", integral, derivative);
      driveController.rotate(-finalPower);
 
      pros::delay(20);
-
-     if (error > 3) //Error depende #tuning              //Cuando entra a la zona cerca del valor que quieres
+     if (abs(error) > 1) //Error depende #tuning              //Cuando entra a la zona cerca del valor que quieres
      {
                                                     //comienza a correr el timer para que no este en
           timer.clearMark();
@@ -268,156 +265,3 @@ void alignWithLine(int vel, int line, int alignSteps) {
     alignStep(fixvel, line);
   }
 }
-
-
-//DELETE IF NEW ONE WORKS
-  void lineFW_OLD(float movepower, float fixpower, int line = 900)   //Powers are from 1 to -1
-  {
-    movepower = movepower*0.01;
-    fixpower = fixpower*0.01;
-    driveController.forward(movepower);
-    while((linetrackerL.get_value() > line) || (linetrackerR.get_value() > line))
-  	{
-
-      	while((linetrackerL.get_value() > line) && (linetrackerR.get_value() < line))
-      	{
-      			driveController.right(-fixpower*0.1);
-            driveController.left(fixpower);
-      	}
-        //
-        while((linetrackerL.get_value() < line) && (linetrackerR.get_value() > line))
-      	{
-          driveController.right(fixpower);
-          driveController.left(-fixpower*0.1);
-      	}
-  	}
-    driveController.stop();
-  }
-
-//TODO: try putting linetracker much higher on robot for better range of values and distinction between red and blue lines.
-  void lineFW_NEW(float movepower, float fixpower, int line)                      //movepower and fixpower are in %
-  {
-    bool leftDetection = false;
-    bool rightDetection = false;
-    movepower = movepower*0.01;
-    fixpower = fixpower*0.01;
-    driveControllerL.setTarget(60);                                                 //Move left side
-    driveControllerR.setTarget(60);                                                 //Move left side
-    while (rightDetection == false  || leftDetection == false)        //While the line is not being detected by any side
-    {
-
-      if ((linetrackerR.get_value() < line) && (rightDetection == false))       //if line is detected by right side
-      {
-        rightDetection = true;
-        printf("DETECTED RIGHT: %.d\n", rightDetection);
-      }
-      if ((linetrackerL.get_value() < line) && (leftDetection == false))       //if line is detected by right side
-      {
-        leftDetection = true;
-        printf("-------------DETECTED LEFT: %.d\n", leftDetection);
-      }
-      if ((rightDetection == true) && (leftDetection == false))       //if line is detected by left side
-      {
-        driveControllerR.setTarget(0);                                                  //Brake right side
-        driveControllerL.setTarget(40);
-        if(linetrackerR.get_value() > line )
-        {
-          rightDetection = false;
-          driveControllerR.setTarget(-30);
-        }                                                 //Move left side
-      }
-      else if ((leftDetection == true) && (rightDetection == false))  //if line is detected by left side
-      {
-        driveControllerL.setTarget(0);                                                  //Brake left side
-        driveControllerR.setTarget(40);                                                 //Move right side
-        if(linetrackerL.get_value() > line )
-        {
-          leftDetection = false;
-          driveControllerL.setTarget(-30);
-        }
-      }
-    }
-    driveControllerL.setTarget(0);                                                 //Move left side
-    driveControllerR.setTarget(0);                                                 //Move left side
-    // //MAY OR MAY NOT BE NECESSARY
-    // if (driveControllerL.isDisabled() == false)                                         //If left drive controller is enabled, disable it
-    // {
-    //   driveControllerL.flipDisable();
-    // }
-    // if (driveControllerR.isDisabled() == false)                                         //If right drive controller is enabled, disable it
-    // {
-    //   driveControllerR.flipDisable();
-    // }
-                                             //Stop
-  }
-
-
-  // int  lineL;
-  // bool pgfLeft;
-  // bool pgbLeft;
-  // int  current_speedL;
-  // int threshold = 500;
-  // bool endTaskL;
-  //bool direction;
-  // void LeftCorrect(void*param)
-  // {
-  //   lineL = 900;
-  //   pgfLeft = false;
-  //   pgbLeft = false;
-  //   current_speedL = 5000;
-  //   endTaskL = false;
-  //   while(endTaskL == false)
-  //   {
-  //     printf("pgfLeft: %d\n", pgfLeft);
-  //     printf("-------------pgbLeft: %d\n", pgbLeft);
-  //     printf("vel: %.f\n", driveL.getActualVelocity());
-  //
-  //     baseL.moveVoltage(current_speedL);
-  //
-  //     if (linetrackerL.get_value() <= lineL)
-  //     {
-  //         if(driveL.getActualVelocity() > 0)
-  //         {
-  //           pgfLeft = true;
-  //           pgbLeft = false;
-  //         }
-  //         else if (driveL.getActualVelocity() < 0)
-  //         {
-  //           pgfLeft = false;
-  //           pgbLeft = true;
-  //         }
-  //     }
-  //     if (linetrackerL.get_value() > lineL)
-  //     {
-  //       if(pgfLeft == true)
-  //       {
-  //         if (driveL.getActualVelocity() > 0)
-  //         {
-  //           current_speedL = -(abs(current_speedL/2));
-  //         }
-  //         else if (driveL.getActualVelocity() < 0)
-  //         {
-  //         current_speedL = abs(current_speedL/2);
-  //         }
-  //       }
-  //       else if(pgbLeft == true)
-  //         {
-  //             if (driveL.getActualVelocity() < 0)
-  //             {
-  //               current_speedL = abs(current_speedL/2);
-  //               pgbLeft = false;
-  //             }
-  //             else if (driveL.getActualVelocity() > 0)
-  //             {
-  //             current_speedL = abs(current_speedL/2);
-  //               pgbLeft = false;
-  //             }
-  //         }
-  //       }
-  //     if (current_speedL < threshold) // || driveL.getActualVelocity() = 0
-  //     {
-  //         endTaskL = true;
-  //     }
-  //     pros::Task::delay(20);
-  //   }
-  // }

@@ -109,7 +109,7 @@ void FwControlUpdateVelocityTbh();
 void FwControlTask(void* param);
 void Noslackmove(int distance);
 void Noslackturn(int, int, int);
-void PIDGyroTurn( int, QTime, float, float, float, float);
+void PIDGyroTurn( float, QTime, float, float, float, float);
 void lineFW_NEW(float, float, int);
 void lineFW_OLD(float, float, int);
 void alignWithLine(int, int, int);
