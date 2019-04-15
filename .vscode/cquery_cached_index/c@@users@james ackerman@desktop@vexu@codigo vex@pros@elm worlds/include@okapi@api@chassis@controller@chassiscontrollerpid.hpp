@@ -122,7 +122,7 @@ class ChassisControllerPID : public virtual ChassisController {
    */
   AbstractMotor::GearsetRatioPair getGearsetRatioPair() const override;
 
-  protected:
+  public:  //protected
   Logger *logger;
   TimeUtil timeUtil;
   std::unique_ptr<IterativePosPIDController> distancePid;

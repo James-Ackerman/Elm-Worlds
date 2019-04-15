@@ -53,12 +53,20 @@ inline AbstractMotor::GearsetRatioPair speedTrans = AbstractMotor::gearset::gree
 inline auto driveController = ChassisControllerFactory::create(
    {DRIVE_MOTOR_RIGHT_1, DRIVE_MOTOR_RIGHT_2, DRIVE_MOTOR_RIGHT_3},
    {DRIVE_MOTOR_LEFT_1, DRIVE_MOTOR_LEFT_2, DRIVE_MOTOR_LEFT_3},
-   IterativePosPIDController::Gains{0.000001, 0, 0},
-   IterativePosPIDController::Gains{0, 0, 0},
-   IterativePosPIDController::Gains{0, 0, 0},
+   // IterativePosPIDController::Gains{0.0022, 0.001, 0.0005},
+   // IterativePosPIDController::Gains{0.0022, 0.002, 0.0001},
+   // IterativePosPIDController::Gains{0.001, 0.001, 0.0001},
    speedTrans,
    {WHEEL_DIAMETER, CHASSIS_WIDTH}
   );
+
+inline auto profileController = AsyncControllerFactory::motionProfile(
+    1.5,  // Maximum linear velocity of the Chassis in m/s
+    0.5,  // Maximum linear acceleration of the Chassis in m/s/s
+    10.0, // Maximum linear jerk of the Chassis in m/s/s/s
+    driveController // Chassis Controller
+  );
+
 
 //Individual motor definitions (for easy voltage control)
 inline Motor driveR(DRIVE_MOTOR_RIGHT_2);
@@ -107,12 +115,12 @@ void FwVelocitySet( int vel, float predicted_drive );
 void sgn(float x);
 void FwControlUpdateVelocityTbh();
 void FwControlTask(void* param);
-void Noslackmove(int distance);
-void Noslackturn(int, int, int);
+void Noslackmove(float);
+void Noslackturn(float, float, float);
 void PIDGyroTurn( float, QTime, float, float, float, float);
-void lineFW_NEW(float, float, int);
-void lineFW_OLD(float, float, int);
+void distancePath(float);
 void alignWithLine(int, int, int);
+void alignStep(int,int); /////maybe remove?
 // void RightCorrect(void*param);
 // void LeftCorrect(void*param);
 //

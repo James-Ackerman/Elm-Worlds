@@ -53,9 +53,9 @@ inline AbstractMotor::GearsetRatioPair speedTrans = AbstractMotor::gearset::gree
 inline auto driveController = ChassisControllerFactory::create(
    {DRIVE_MOTOR_RIGHT_1, DRIVE_MOTOR_RIGHT_2, DRIVE_MOTOR_RIGHT_3},
    {DRIVE_MOTOR_LEFT_1, DRIVE_MOTOR_LEFT_2, DRIVE_MOTOR_LEFT_3},
-   IterativePosPIDController::Gains{0.000001, 0, 0},
-   IterativePosPIDController::Gains{0, 0, 0},
-   IterativePosPIDController::Gains{0, 0, 0},
+   IterativePosPIDController::Gains{0.0022, 0.001, 0.0001},
+   IterativePosPIDController::Gains{0.001, 0.003, 0.0001},
+   IterativePosPIDController::Gains{0.001, 0.001, 0.0001},
    speedTrans,
    {WHEEL_DIAMETER, CHASSIS_WIDTH}
   );
@@ -107,8 +107,8 @@ void FwVelocitySet( int vel, float predicted_drive );
 void sgn(float x);
 void FwControlUpdateVelocityTbh();
 void FwControlTask(void* param);
-void Noslackmove(int distance);
-void Noslackturn(int, int, int);
+void Noslackmove(float);
+void Noslackturn(float, float, float);
 void PIDGyroTurn( float, QTime, float, float, float, float);
 void lineFW_NEW(float, float, int);
 void lineFW_OLD(float, float, int);

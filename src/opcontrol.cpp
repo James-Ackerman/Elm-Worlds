@@ -10,9 +10,11 @@ void opcontrol()
   bool STATE_TRANSMISSION = LOW;
   bool STATE_SHIFTER = LOW;
   bool SHIFTER_TOGGLE = 0;
-  int FLYWHEEL_LOW = 400;
   int FLYWHEEL_MID = 520;
   int FLYWHEEL_HIGH = 600;
+  int STARTING_HEIGHT = 0;
+  int HOLD_HEIGHT = 250;
+
   pros::Task FwControl(FwControlTask);
   flywheel.setGearing(AbstractMotor::gearset::blue);
   pros::lcd::set_text(7, "OPCONTROL");
@@ -31,6 +33,25 @@ void opcontrol()
 		 ////////////////////////////////CHASSIS(DRIVE)/////////////////////////////
      driveController.arcade(controller.getAnalog(ControllerAnalog::leftY), -controller.getAnalog(ControllerAnalog::rightX));
 
+     //////////////////////////////////DESCORER////////////////////////////////
+
+        if ( abs(controller.getAnalog(ControllerAnalog::rightY)) > 0.2){
+          if(!descorerController.isDisabled())
+          {
+            descorerController.flipDisable();
+          }
+          descorer.moveVoltage(12000*controller.getAnalog(ControllerAnalog::rightY));
+        }
+        else if (descorerController.isDisabled() && abs(controller.getAnalog(ControllerAnalog::rightY)) <= 0.2)
+        {
+          descorer.moveVoltage(0);
+        }
+     if (ButtonY.changedToPressed())      //Press button to go to raise lift to height
+      {
+        if(descorerController.isDisabled())
+        {descorerController.flipDisable();}
+        descorerController.setTarget(HOLD_HEIGHT);
+      }
      ////////////////////////////////TRANSMISSION///////////////////////////////
      if (ButtonB.changedToPressed())//
      {
@@ -38,18 +59,18 @@ void opcontrol()
          pistonT.set_value(STATE_TRANSMISSION);
      }
 
-     if (ButtonY.changedToPressed())
+     //////////////////////////////////SHIFTER//////////////////////////////////
+     if (ButtonX.changedToPressed())
      {
          STATE_SHIFTER = !STATE_SHIFTER;
          pistonS.set_value(STATE_SHIFTER);
      }
-     //////////////////////////////////SHIFTER//////////////////////////////////
      if (ButtonA.changedToPressed())
      {
          SHIFTER_TOGGLE =! SHIFTER_TOGGLE;
      }
 
-     if (ButtonDOWN.changedToPressed())          //Flywheel MID conditions
+     if (ButtonRIGHT.changedToPressed())          //Flywheel MID conditions
      {
        //gain = 0.1;
        SHIFTER_TOGGLE = 1;
@@ -163,10 +184,6 @@ void opcontrol()
       {
               FwVelocitySet(0, 1);
       }
-
-		 /////////////////////////////////DESCORER//////////////////////////////////
-     descorer.move_voltage(12000*controller.getAnalog(ControllerAnalog::rightY));
-
 
 		 pros::Task::delay(20);   //opcontrol loop speed
 	 }

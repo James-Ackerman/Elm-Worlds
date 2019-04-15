@@ -115,7 +115,6 @@ void PIDGyroTurn(float target, QTime waitTime, float maxPower = 0.8, float Kp = 
    timer.placeMark();
    while (timer.getDtFromMark() < waitTime) //Mientras el timer este menor que
    {
-////
      error = target-((((-1*gyro2.get())+gyro1.get())/2));                                                         // P
      proportion = Kp*error;
 
@@ -174,7 +173,7 @@ void PIDGyroTurn(float target, QTime waitTime, float maxPower = 0.8, float Kp = 
  }
 
 //Removes slack before turn. Corrects with gyro at the end.
-void Noslackturn(int degrees, int gyroTarget, int gyroThreshold = 50)  //Tune threshold
+void Noslackturn(float degrees, float gyroTarget, float gyroThreshold = 50)  //Tune threshold
 {
  if (degrees > 0)
  {
@@ -210,10 +209,11 @@ void Noslackturn(int degrees, int gyroTarget, int gyroThreshold = 50)  //Tune th
 
 
 //Move forward after removing gear/chain slack
-void Noslackmove(int distance)
+void Noslackmove(float distance)
 {
   if (distance > 0)
   {
+    //
     driveController.right(0.5);         //Remove Slack
     driveController.left(0.5);
     pros::delay(75);

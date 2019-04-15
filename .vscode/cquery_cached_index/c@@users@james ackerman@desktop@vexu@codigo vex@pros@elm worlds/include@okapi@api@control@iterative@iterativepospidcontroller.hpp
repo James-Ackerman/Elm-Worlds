@@ -231,8 +231,8 @@ class IterativePosPIDController : public IterativePositionController<double, dou
 
   // Output bounds
   double output{0};
-  double outputMax{1};
-  double outputMin{-1};
+  double outputMax{1}; //1
+  double outputMin{-1};//-1
 
   // Reset the integrated when the controller crosses 0 or not
   bool shouldResetOnCross{true};
