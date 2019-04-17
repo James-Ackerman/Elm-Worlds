@@ -99,7 +99,7 @@ void FwControlTask(void* param)
 //PID turn with gyro
 void PIDGyroTurn(float target, QTime waitTime, float maxPower = 0.8, float Kp = 0.0069, float Ki = 0.045, float Kd = 0.05)  //Estos valores eran para cuando los motores iban a 127.
  {
-
+   target = -1*target;
    float error;
    float proportion;
    float integralRaw;
@@ -172,63 +172,102 @@ void PIDGyroTurn(float target, QTime waitTime, float maxPower = 0.8, float Kp = 
    driveController.stop();
  }
 
+
+//Set distance to travel for profile controller
+ // void distancePath(float distance)
+ // {
+ //   profileController.generatePath({
+ //     Point{0_ft, 0_ft, 0_deg},  // Profile starting position, this will normally be (0, 0, 0)
+ //     Point{distance*foot, 0_ft, 0_deg}}, // The next point in the profile, 3 feet forward
+ //     "A" // Profile name
+ //   );
+ // }
+
+//
+//Set angle to turn for profile controller
+ // void anglePath(float angle)
+ // {
+ //   profileController.generatePath({
+ //     Point{0_ft, 0_ft, 0_deg},  // Profile starting position, this will normally be (0, 0, 0)
+ //     Point{0_ft, 0_ft, angle*degree}}, // The next point in the profile, 3 feet forward
+ //     "B" // Profile name
+ //   );
+ // }
+
 //Removes slack before turn. Corrects with gyro at the end.
-void Noslackturn(float degrees, float gyroTarget, float gyroThreshold = 50)  //Tune threshold
+void NoslackturnGyro(float degrees, float maxVel, float gyroThreshold = 5)  //Tune threshold
 {
+ driveController.setMaxVelocity(maxVel);
  if (degrees > 0)
  {
-   driveController.right(0.5);         //Remove Slack
-   driveController.left(-0.5);
-   pros::delay(75);
-   driveController.turnAngle(degrees);  //Do movement
-   if (((((-1*gyro2.get())+gyro1.get())/2) > (gyroTarget+gyroThreshold)) || ((((-1*gyro2.get())+gyro1.get())/2) < (gyroTarget-gyroThreshold)))
-   //If 2 gyros average is out of threshold
-   {
-     //gyroTarget ----> Target for GYRO PID
-     //FIX TURN WITH GYRO PID
-     //change once I have the tuning values
-     //PIDGyroTurn (int target, QTime waitTime, float maxPower = 1, float Kp = 0.0003, float Ki = 0.075, float Kd = 0.6)
-   }
+     driveController.right(0.5);          //Remove Slack
+     driveController.left(-0.5);
+     pros::delay(75);
+     driveController.turnAngle(degrees*degree);  //Do movement
+     driveController.waitUntilSettled();
+     if ((abs((((-1*gyro2.get())+gyro1.get())/2)) > (degrees+gyroThreshold)))
+     {
+       PIDGyroTurn(degrees, 600_ms, 1.0, 0.0065, 0.06, 0.05);
+     }
  }
  else
  {
    driveController.right(-0.5);         //Remove Slack
    driveController.left(0.5);
    pros::delay(75);
-   driveController.turnAngle(degrees);  //Do movement
-   if (((((-1*gyro2.get())+gyro1.get())/2) > (gyroTarget+gyroThreshold)) || ((((-1*gyro2.get())+gyro1.get())/2) < (gyroTarget-gyroThreshold)))
-   //If 2 gyros average is out of threshold
-   {
-     //gyroTarget ----> Target for GYRO PID
-     //FIX TURN WITH GYRO PID
-     //change once I have the tuning values
-     //PIDGyroTurn (int target, QTime waitTime, float maxPower = 1, float Kp = 0.0003, float Ki = 0.075, float Kd = 0.6)
-   }
+   driveController.turnAngle(degrees*degree);  //Do movement
+   driveController.waitUntilSettled();
+     if ((abs((((-1*gyro2.get())+gyro1.get())/2)) > (degrees+gyroThreshold)))
+       //If 2 gyros average is out of threshold
+       {
+         PIDGyroTurn(degrees, 600_ms, 1.0, 0.0065, 0.06, 0.05);
+       }
  }
 }
-
-
-//Move forward after removing gear/chain slack
-void Noslackmove(float distance)
+//
+void Noslackturn(float degrees, float maxVel)  //Tune threshold
 {
+ driveController.setMaxVelocity(maxVel);
+ if (degrees > 0)
+ {
+     driveController.right(0.5);          //Remove Slack
+     driveController.left(-0.5);
+     pros::delay(75);
+     driveController.turnAngle(degrees*degree);  //Do movement
+ }
+ else
+ {
+   driveController.right(-0.5);         //Remove Slack
+   driveController.left(0.5);
+   pros::delay(75);
+   driveController.turnAngle(degrees*degree);  //Do movement
+ }
+}
+//
+//Move forward after removing gear/chain slack
+void Noslackmove(float distance, float maxVel)
+{
+  driveController.setMaxVelocity(maxVel);
   if (distance > 0)
   {
     //
-    driveController.right(0.5);         //Remove Slack
+    driveController.right(0.5);          //Remove Slack
     driveController.left(0.5);
     pros::delay(75);
-    driveController.moveDistance(distance*foot);  //Do movement
+    driveController.moveDistance(distance*foot);
+
   }
   else
   {
     driveController.right(-0.5);         //Remove Slack
     driveController.left(-0.5);
     pros::delay(75);
-    driveController.moveDistance(distance*foot);  //Do movement
+    driveController.moveDistance(distance*foot);
   }
 }
 
 
+//Alligns robot using line trackers
 void alignStep(int vel, int line) {
   bool seenLineR = false;
   bool seenLineL = false;
@@ -254,6 +293,8 @@ void alignStep(int vel, int line) {
   driveControllerL.setTarget(0);
 }
 
+
+//Function to use in autonomous.cpp
 void alignWithLine(int vel, int line, int alignSteps) {
   alignStep(vel, line);
   int fixvel = vel > 0 ? 30 : -30;

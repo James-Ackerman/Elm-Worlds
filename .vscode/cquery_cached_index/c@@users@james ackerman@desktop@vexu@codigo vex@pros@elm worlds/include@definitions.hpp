@@ -29,7 +29,7 @@ const int DRIVE_MOTOR_LEFT_1 = 4;     //1,2,3 = Top, Bottom, Front
 const int DRIVE_MOTOR_LEFT_2 = -5;
 const int DRIVE_MOTOR_LEFT_3 = 6;
 const auto WHEEL_DIAMETER = 4_in;     //4_in
-const auto CHASSIS_WIDTH = 12.25_in;  //13_in
+const auto CHASSIS_WIDTH = 12.75_in;  //13_in
 
 // Motor port definitions. Update with the real robot values
 const int FLYWHEEL_MOTOR = 16;
@@ -53,12 +53,17 @@ inline AbstractMotor::GearsetRatioPair speedTrans = AbstractMotor::gearset::gree
 inline auto driveController = ChassisControllerFactory::create(
    {DRIVE_MOTOR_RIGHT_1, DRIVE_MOTOR_RIGHT_2, DRIVE_MOTOR_RIGHT_3},
    {DRIVE_MOTOR_LEFT_1, DRIVE_MOTOR_LEFT_2, DRIVE_MOTOR_LEFT_3},
-   IterativePosPIDController::Gains{0.0022, 0.001, 0.0001},
-   IterativePosPIDController::Gains{0.001, 0.003, 0.0001},
-   IterativePosPIDController::Gains{0.001, 0.001, 0.0001},
    speedTrans,
    {WHEEL_DIAMETER, CHASSIS_WIDTH}
   );
+
+// inline auto profileController = AsyncControllerFactory::motionProfile(
+//     3,     // Maximum linear velocity of the Chassis in m/s
+//     1.45,  // Maximum linear acceleration of the Chassis in m/s/s
+//     9.7    // Maximum linear jerk of the Chassis in m/s/s/s
+//     driveController // Chassis Controller
+//   );
+
 
 //Individual motor definitions (for easy voltage control)
 inline Motor driveR(DRIVE_MOTOR_RIGHT_2);
@@ -88,34 +93,21 @@ extern long            first_cross;
 extern float           drive_approx;
 extern long            motor_drive;
 
-extern int  lineR;
-extern bool passedLineR;
-extern int  current_speedR;
-extern int thresholdR;
-extern bool endTaskR;
-
-extern bool pgfLeft;
-extern bool pgbLeft;
-extern int  lineL;
-extern int  current_speedL;
-extern int thresholdL;
-extern bool endTaskL;
-
 //Function declarations. Definitions appear in definitions.cpp
-void FwMotorSet( int value );
-void FwVelocitySet( int vel, float predicted_drive );
+void FwMotorSet(int);
+void FwVelocitySet(int, float);
 void sgn(float x);
 void FwControlUpdateVelocityTbh();
 void FwControlTask(void* param);
-void Noslackmove(float);
-void Noslackturn(float, float, float);
+void distancePath(float);
+void anglePath(float);
+void Noslackmove(float, float);
+void Noslackturn(float, float);
+void NoslackturnGyro(float, float, float);
 void PIDGyroTurn( float, QTime, float, float, float, float);
-void lineFW_NEW(float, float, int);
-void lineFW_OLD(float, float, int);
 void alignWithLine(int, int, int);
-// void RightCorrect(void*param);
-// void LeftCorrect(void*param);
-//
+void alignStep(int,int);
+
 inline ControllerButton RightBumperUP(ControllerDigital::R1);
 inline ControllerButton RightBumperDOWN(ControllerDigital::R2);
 inline ControllerButton LeftBumperUP(ControllerDigital::L1);

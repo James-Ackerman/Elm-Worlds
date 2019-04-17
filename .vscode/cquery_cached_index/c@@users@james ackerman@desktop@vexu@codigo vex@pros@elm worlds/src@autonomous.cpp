@@ -5,19 +5,13 @@ void autonomous() {
 pros::lcd::set_text(7, "AUTONOMOUS");
 pros::Task FwControl(FwControlTask);
 flywheel.setGearing(AbstractMotor::gearset::blue);
-//ChassisControllerPID->distancePid.setOutputLimits();
-Noslackmove(1);
-//PIDGyroTurn(92.72, 600_ms, 1.0, 0.0065, 0.06, 0.05);  //Turn 90 degrees
 /////////////////////////////AUTONOMOUS RED//////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//alignWithLine(100, 900, 2); // WORKING FOR VELOCITY < 100, LINE = 900, alignSteps = 2
-// pros::Task LeftCorrectTask(LeftCorrect);
-// while(endTaskL == false); //&& (endTaskR == true));
 
 
 
 
-//
+
 ////////////////////////////Reference stuff///////////////////////////////////////////////////////////////////////////////////////////////////////////
   //FwVelocitySet(490, 1);
   // pros::delay(500);
@@ -37,16 +31,16 @@ Noslackmove(1);
   //driveController.setMaxVoltage(800);
   //driveController.setMaxVelocity(60);
   //pros::delay(1000) or pros::Task::delay(1000)
+  //Noslackturn(92.72, 150);
+  //NoslackturnGyro(92.72, 150, 5);
+  //Noslackmove(2, 50);
+  //driveController.setMaxVoltage(8000)
 
-  //Using gyro PID
-  // while(1)
-  // {
-  //   GdriveController.setTarget(90);
-  // }
+  //Line Trackers
+  //alignWithLine(100, 900, 2); // WORKING FOR VELOCITY < 100, LINE = 900, alignSteps = 2
 
   // Testing Timers
   // Timer timer;
-  //
   // timer.placeMark();
   // while (timer.getDtFromMark() < 500_ms) //Mientras el timer este menor que
   // {driveController.rotate(0.5);}
