@@ -35,14 +35,14 @@ void opcontrol()
 
      //////////////////////////////////DESCORER////////////////////////////////
 
-        if ( abs(controller.getAnalog(ControllerAnalog::rightY)) > 0.2){
+        if ( abs(controller.getAnalog(ControllerAnalog::rightY)) > 0.5){
           if(!descorerController.isDisabled())
           {
             descorerController.flipDisable();
           }
           descorer.moveVoltage(12000*controller.getAnalog(ControllerAnalog::rightY));
         }
-        else if (descorerController.isDisabled() && abs(controller.getAnalog(ControllerAnalog::rightY)) <= 0.2)
+        else if (descorerController.isDisabled() && abs(controller.getAnalog(ControllerAnalog::rightY)) <= 0.5)
         {
           descorer.moveVoltage(0);
         }

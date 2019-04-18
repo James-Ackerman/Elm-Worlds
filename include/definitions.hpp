@@ -107,6 +107,11 @@ void NoslackturnGyro(float, float, float);
 void PIDGyroTurn( float, QTime, float, float, float, float);
 void alignWithLine(int, int, int);
 void alignStep(int,int);
+void shoot1Ball();
+void shoot1BallWait();
+void shoot2Balls();
+void shoot2BallsWait();
+
 
 inline ControllerButton RightBumperUP(ControllerDigital::R1);
 inline ControllerButton RightBumperDOWN(ControllerDigital::R2);

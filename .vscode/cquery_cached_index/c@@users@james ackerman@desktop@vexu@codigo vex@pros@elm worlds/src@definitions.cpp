@@ -107,7 +107,7 @@ void PIDGyroTurn(float target, QTime waitTime, float maxPower = 0.8, float Kp = 
    float lastError;
    float derivative;
 
-   float integralActiveZone = 2;        // Valor del gyro cerca del target para que empieze a trabajar el integral
+   float integralActiveZone = 3;        // Valor del gyro cerca del target para que empieze a trabajar el integral
    float integralPowerLimit = 0.3;       // Limite de power que utiliza el integral (ocurre cuando el robot esta en el integralActiveZone) SE NECESITA TUNING (cambiar el 50)
    float finalPower;
 
@@ -162,7 +162,7 @@ void PIDGyroTurn(float target, QTime waitTime, float maxPower = 0.8, float Kp = 
      driveController.rotate(-finalPower);
 
      pros::delay(20);
-     if (abs(error) > 1) //Error depende #tuning              //Cuando entra a la zona cerca del valor que quieres
+     if (abs(error) > 2) //Error depende #tuning              //Cuando entra a la zona cerca del valor que quieres
      {
                                                     //comienza a correr el timer para que no este en
           timer.clearMark();
@@ -232,14 +232,14 @@ void Noslackturn(float degrees, float maxVel)  //Tune threshold
  {
      driveController.right(0.5);          //Remove Slack
      driveController.left(-0.5);
-     pros::delay(75);
+     pros::delay(70);
      driveController.turnAngle(degrees*degree);  //Do movement
  }
  else
  {
    driveController.right(-0.5);         //Remove Slack
    driveController.left(0.5);
-   pros::delay(75);
+   pros::delay(70);
    driveController.turnAngle(degrees*degree);  //Do movement
  }
 }
@@ -253,7 +253,7 @@ void Noslackmove(float distance, float maxVel)
     //
     driveController.right(0.5);          //Remove Slack
     driveController.left(0.5);
-    pros::delay(75);
+    pros::delay(70);
     driveController.moveDistance(distance*foot);
 
   }
@@ -261,7 +261,7 @@ void Noslackmove(float distance, float maxVel)
   {
     driveController.right(-0.5);         //Remove Slack
     driveController.left(-0.5);
-    pros::delay(75);
+    pros::delay(70);
     driveController.moveDistance(distance*foot);
   }
 }
@@ -304,4 +304,61 @@ void alignWithLine(int vel, int line, int alignSteps) {
     }
     alignStep(fixvel, line);
   }
+}
+
+
+//Shoot 1 Ball using proximity sensor
+void shoot1Ball()
+{
+    while((ProxTOP.get_value() == 0))
+    {
+      indexer.move_voltage(-12000);
+      intake.move_voltage(12000);
+    }
+    while((ProxTOP.get_value() == 1))
+    {}
+    indexer.move_voltage(0);
+    intake.move_voltage(0);
+}
+
+//Shoots 1 ball using pros::delay
+void shoot1BallWait()
+{
+    indexer.move_voltage(-12000);
+    intake.move_voltage(12000);
+    pros::delay(300);
+    indexer.move_voltage(0);
+    intake.move_voltage(0);
+}
+
+void shoot2Balls()
+{
+    while((ProxTOP.get_value() == 0))
+    {
+      indexer.move_voltage(-12000);
+      intake.move_voltage(12000);
+    }
+    while((ProxTOP.get_value() == 1))
+    {}
+      pistonS.set_value(HIGH);
+      pros::delay(150);
+    while((ProxTOP.get_value() == 0))
+    {}
+    while((ProxTOP.get_value() == 1))
+    {}
+    indexer.move_voltage(0);
+    intake.move_voltage(0);
+      pistonS.set_value(LOW);
+}
+
+void shoot2BallsWait()
+{
+  indexer.move_voltage(-12000);
+  intake.move_voltage(12000);
+  pros::delay(200);
+  pistonS.set_value(HIGH);
+  pros::delay(250);
+  indexer.move_voltage(0);
+  intake.move_voltage(0);
+  pistonS.set_value(LOW);
 }
