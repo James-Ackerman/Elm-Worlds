@@ -11,7 +11,7 @@ void opcontrol()
   bool STATE_SHIFTER = LOW;
   bool SHIFTER_TOGGLE = 0;
   int FLYWHEEL_MID = 520;
-  int FLYWHEEL_HIGH = 600;
+  int FLYWHEEL_HIGH = 600; //600
   int STARTING_HEIGHT = 0;
   int HOLD_HEIGHT = 250;
 

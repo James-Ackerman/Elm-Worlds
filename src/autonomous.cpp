@@ -6,7 +6,9 @@ pros::lcd::set_text(7, "AUTONOMOUS");
 pros::Task FwControl(FwControlTask);
 flywheel.setGearing(AbstractMotor::gearset::blue);
 /////////////////////////////AUTONOMOUS RED//////////////////////////////////////////////////////////////////////////////////////////////////////////
-FwVelocitySet(450, 1);
+FwVelocitySet(600, 1);
+pros::delay(300);
+FwVelocitySet(400, 1);
 pros::delay(1000);
 //
 //No slack move async with raise lift
@@ -16,6 +18,7 @@ driveController.left(0.5);
 pros::delay(75);
 driveController.moveDistanceAsync(2.3_ft);
 descorerController.setTarget(260);
+pros::delay(200);
 shoot1Ball();
 FwVelocitySet(0, 1);
 driveController.waitUntilSettled();
@@ -55,11 +58,13 @@ descorerController.setTarget(200);
 Noslackmove(-0.5, 30);
 pros::delay(200);
 descorerController.setTarget(0);
+pros::delay(150);
 Noslackmove(1.15, 30);
+//Sube Cap
 descorerController.setMaxVelocity(50);
 descorerController.setTarget(200);
 
-Noslackturn(7, 40);
+Noslackturn(10, 40);
 
 pros::delay(500);
 shoot2Balls();
@@ -67,6 +72,7 @@ FwVelocitySet(0, 1);
 roller.move_voltage(0);
 intake.move_voltage(0);
 indexer.move_voltage(0);
+
 //Leave cap for Dingo
 Noslackturn(155, 60);
 Noslackmove(0.85, 50);
@@ -91,7 +97,7 @@ roller.move_voltage(0);
 intake.move_voltage(0);
 indexer.move_voltage(0);
 descorerController.setTarget(50);
-FwVelocitySet(530, 1);
+FwVelocitySet(535, 1);
 
 //Turn for cap
 Noslackturn(-80, 60);
@@ -106,19 +112,23 @@ intake.move_voltage(0);
 Noslackmove(-0.4, 60);
 Noslackturn(-95, 60);
 
-//Acomoda apra tirar
+//Acomoda con plat
 driveController.forward(-0.4);
 pros::delay(700);
 driveController.stop();
 Noslackmove(0.5, 30);
 pros::delay(75);
-Noslackturn(15, 30);
+
+//Le da al flag de abajo
+Noslackturn(12, 30);
 pros::delay(75);
-Noslackmove(3.5, 45);
+Noslackmove(3.5, 50);
 descorerController.setTarget(0);
-Noslackmove(-1, 45);
+FwVelocitySet(520, 1);
+Noslackmove(-0.38, 45);
 pros::delay(75);
-Noslackturn(75, 30);
+Noslackturn(64.5, 30);
+shoot2Balls();
 
 //Tira
 // indexer.move_voltage(-12000);

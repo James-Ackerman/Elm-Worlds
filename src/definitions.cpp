@@ -336,7 +336,7 @@ void shoot2Balls()
     while((ProxTOP.get_value() == 0))
     {
       indexer.move_voltage(-12000);
-      intake.move_voltage(12000);
+      intake.move_voltage(5000);
     }
     while((ProxTOP.get_value() == 1))
     {}
