@@ -99,6 +99,7 @@ void FwControlTask(void* param)
 //PID turn with gyro
 void PIDGyroTurn(float target, QTime waitTime, float maxPower = 0.8, float Kp = 0.0069, float Ki = 0.045, float Kd = 0.05)  //Estos valores eran para cuando los motores iban a 127.
  {
+   driveController.setMaxVelocity(200);
    target = -1*target;
    float error;
    float proportion;
@@ -195,7 +196,7 @@ void PIDGyroTurn(float target, QTime waitTime, float maxPower = 0.8, float Kp = 
  // }
 
 //Removes slack before turn. Corrects with gyro at the end.
-void NoslackturnGyro(float degrees, float maxVel, float gyroThreshold = 5)  //Tune threshold
+void NoslackturnGyro(float degrees, float gyroTarget, float maxVel, float gyroThreshold = 5)  //Tune threshold
 {
  driveController.setMaxVelocity(maxVel);
  if (degrees > 0)
@@ -205,9 +206,9 @@ void NoslackturnGyro(float degrees, float maxVel, float gyroThreshold = 5)  //Tu
      pros::delay(75);
      driveController.turnAngle(degrees*degree);  //Do movement
      driveController.waitUntilSettled();
-     if ((abs((((-1*gyro2.get())+gyro1.get())/2)) > (degrees+gyroThreshold)))
+     if ((abs((((-1*gyro2.get())+gyro1.get())/2)) > (gyroTarget+gyroThreshold)))
      {
-       PIDGyroTurn(degrees, 600_ms, 1.0, 0.0065, 0.06, 0.05);
+       PIDGyroTurn(gyroTarget, 600_ms, 1.0, 0.0065, 0.06, 0.05);
      }
  }
  else
@@ -217,10 +218,10 @@ void NoslackturnGyro(float degrees, float maxVel, float gyroThreshold = 5)  //Tu
    pros::delay(75);
    driveController.turnAngle(degrees*degree);  //Do movement
    driveController.waitUntilSettled();
-     if ((abs((((-1*gyro2.get())+gyro1.get())/2)) > (degrees+gyroThreshold)))
+     if ((abs((((-1*gyro2.get())+gyro1.get())/2)) > (gyroTarget+gyroThreshold)))
        //If 2 gyros average is out of threshold
        {
-         PIDGyroTurn(degrees, 600_ms, 1.0, 0.0065, 0.06, 0.05);
+         PIDGyroTurn(gyroTarget, 600_ms, 1.0, 0.0065, 0.06, 0.05);
        }
  }
 }
@@ -361,4 +362,16 @@ void shoot2BallsWait()
   indexer.move_voltage(0);
   intake.move_voltage(0);
   pistonS.set_value(LOW);
+}
+
+void swingTurn(int leftTarget, int rightTarget)
+{
+driveControllerL.tarePosition();
+driveControllerR.tarePosition();
+
+driveControllerL.setTarget(leftTarget);
+driveControllerR.setTarget(rightTarget);
+
+driveControllerL.waitUntilSettled();
+driveControllerR.waitUntilSettled();
 }

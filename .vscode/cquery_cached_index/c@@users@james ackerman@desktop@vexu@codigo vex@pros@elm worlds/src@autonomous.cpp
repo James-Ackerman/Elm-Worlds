@@ -5,17 +5,21 @@ void autonomous() {
 pros::lcd::set_text(7, "AUTONOMOUS");
 pros::Task FwControl(FwControlTask);
 flywheel.setGearing(AbstractMotor::gearset::blue);
-/////////////////////////////AUTONOMOUS RED//////////////////////////////////////////////////////////////////////////////////////////////////////////
-FwVelocitySet(450, 1);
+descorerController.tarePosition();
+/////////////////////////////AUTONOMOUS BLUE FRONT//////////////////////////////////////////////////////////////////////////////////////////////////////////
+FwVelocitySet(600, 1);
+pros::delay(300);
+FwVelocitySet(380, 1);
 pros::delay(1000);
 //
 //No slack move async with raise lift
-driveController.setMaxVelocity(70);
+driveController.setMaxVelocity(40);
 driveController.right(0.5);
 driveController.left(0.5);
 pros::delay(75);
 driveController.moveDistanceAsync(2.3_ft);
 descorerController.setTarget(260);
+pros::delay(300);
 shoot1Ball();
 FwVelocitySet(0, 1);
 driveController.waitUntilSettled();
@@ -23,21 +27,21 @@ pros::delay(130);
 //
 
 //No slack move with lower lift BEGINNING
-driveController.setMaxVelocity(55);
-driveController.right(0.5);
-driveController.left(0.5);
+driveController.setMaxVelocity(40);
+driveController.forward(-0.5);
 pros::delay(75);
 driveController.moveDistanceAsync(-2.8_ft);
+FwVelocitySet(590, 1);
 descorerController.setTarget(200);
 driveController.waitUntilSettled();
 
 pros::delay(100);
-FwVelocitySet(600, 1);
+
+//Coge Bolitas encima  cap
 Noslackturn(40.5, 30);
 pros::delay(100);
 Noslackmove(1.6, 40);
 descorerController.setTarget(105);
-
 //No slack move Async with chupa intake
 driveController.setMaxVelocity(80);
 driveController.right(0.5);
@@ -45,7 +49,6 @@ driveController.left(0.5);
 pros::delay(75);
 driveController.moveDistanceAsync(-0.3_ft);
 pros::delay(100);
-
 roller.move_voltage(12000);
 intake.move_voltage(12000);
 indexer.move_voltage(500);
@@ -55,18 +58,25 @@ descorerController.setTarget(200);
 Noslackmove(-0.5, 30);
 pros::delay(200);
 descorerController.setTarget(0);
+pros::delay(150);
 Noslackmove(1.15, 30);
+//Sube Cap
 descorerController.setMaxVelocity(50);
-descorerController.setTarget(200);
+descorerController.setTarget(260);
 
-Noslackturn(7, 40);
-
-pros::delay(500);
-shoot2Balls();
+Noslackturn(10.7, 30);
+//SHoot 2 balls
+shoot1Ball();
+pistonS.set_value(HIGH);
+FwVelocitySet(600, 1);
+pros::delay(1000);
+shoot1Ball();
+pistonS.set_value(LOW);
 FwVelocitySet(0, 1);
 roller.move_voltage(0);
 intake.move_voltage(0);
 indexer.move_voltage(0);
+
 //Leave cap for Dingo
 Noslackturn(155, 60);
 Noslackmove(0.85, 50);
@@ -81,20 +91,20 @@ Noslackturn(-38, 60);
 Noslackmove(2.55, 45);
 
 //intake ball on platform
-descorerController.setTarget(100);
-Noslackmove(-0.5, 60);
+descorerController.setTarget(95);
 roller.move_voltage(12000);
 intake.move_voltage(12000);
+Noslackmove(-0.5, 60);
 indexer.move_voltage(500);
-pros::delay(500);
+pros::delay(700);
 roller.move_voltage(0);
 intake.move_voltage(0);
 indexer.move_voltage(0);
 descorerController.setTarget(50);
-FwVelocitySet(530, 1);
+FwVelocitySet(535, 1);
 
 //Turn for cap
-Noslackturn(-79, 60);
+Noslackturn(-80, 60);
 descorerController.setTarget(260);
 roller.move_voltage(12000);
 intake.move_voltage(12000);
@@ -103,24 +113,127 @@ indexer.move_voltage(400);
 pros::delay(1000);
 roller.move_voltage(0);
 intake.move_voltage(0);
-Noslackmove(-0.4, 60);
+Noslackmove(-0.3, 60);
 Noslackturn(-95, 60);
 
+//Acomoda con plat
 driveController.forward(-0.4);
-pros::delay(800);
+pros::delay(750);
 driveController.stop();
 Noslackmove(0.5, 30);
-Noslackturn(53.5, 30);
-shoot2Balls();
+pros::delay(75);
+
+//Le da al flag de abajo
+Noslackturn(12, 30);
+pros::delay(75);
+Noslackmove(3.5, 50);
+descorerController.setTarget(0);
+FwVelocitySet(520, 1);
+Noslackmove(-0.5, 45);
+pros::delay(75);
+Noslackturn(65, 30);
+
+//Shoot oppo field
+shoot1Ball();
+pistonS.set_value(HIGH);
+FwVelocitySet(600, 1);
+pros::delay(1000);
+shoot1Ball();
+pistonS.set_value(LOW);
 FwVelocitySet(0, 1);
 
-
-
-
-
-
+/////////////////////////////AUTONOMOUS BLUE BACK//////////////////////////////////////////////////////////////////////////////////////////////////////////
+// //
+// //NEW VERSION
+// FwVelocitySet(490, 1);
+// pros::delay(2500);
+// shoot1Ball();
+// FwVelocitySet(0, 1);
+// Noslackmove(-1.6, 30);
+// descorerController.setTarget(200);
+// pros::delay(70);
+// Noslackturn(90, 30);
+// //Coge Bolitas encima  cap
+// Noslackmove(3, 47);
+// pros::delay(70);
+// descorerController.setTarget(105);
+// driveController.setMaxVelocity(80);
+// driveController.right(0.5);
+// driveController.left(0.5);
+// pros::delay(75);
+// driveController.moveDistanceAsync(-0.3_ft);
+// pros::delay(100);
+// roller.move_voltage(12000);
+// intake.move_voltage(12000);
+// indexer.move_voltage(500);
+// driveController.waitUntilSettled();
+// pros::delay(200);
+// descorerController.setTarget(200);
+// Noslackmove(-0.5, 40);
+// pros::delay(200);
+// descorerController.setTarget(0);
+// pros::delay(350);
+// Noslackmove(1.25, 40);
 //
+// //Acomoda con poste
+// descorerController.setMaxVelocity(50);
+// descorerController.setTarget(420);
+// descorerController.waitUntilSettled();
+// pros::delay(75);
+// Noslackturn(15, 40);
+// Noslackmove(-1.8, 30);
+// pros::delay(75);
+// PIDGyroTurn(0.5, 800_ms, 0.3, 0.0049, 0.05, 0.04); //06 int
+// pros::delay(70);
+// //Pone Cap
+// Noslackmove(-0.75, 20);
+// descorerController.setMaxVelocity(120);
+// descorerController.setTarget(830);
+// descorerController.waitUntilSettled();
+// driveController.stop();
+//
+// //shoot at middle flags
+// Noslackmove(0.2, 30);
+// FwVelocitySet(550, 1);
+// descorerController.setTarget(260);
+// descorerController.waitUntilSettled();
+// PIDGyroTurn(0, 400_ms, 1.0, 0.0060, 0.05, 0.04);
+// Noslackmove(2.2, 30);
+// pros::delay(70);
+// Noslackturn(23, 30);
+//
+// shoot1Ball();
+// FwVelocitySet(490, 1);
+// pros::delay(1000);
+// shoot1Ball();
+//
+// //intake ball on platform
+// Noslackmove(0.49, 30);
+// descorerController.setTarget(100);
+// roller.move_voltage(12000);
+// intake.move_voltage(12000);
+// Noslackmove(-0.7, 50);
+// descorerController.setTarget(52);
+// indexer.move_voltage(500);
+// pros::delay(200);
+//
+// //intake ball under cap
+// descorerController.setTarget(260);
+// PIDGyroTurn(92.72, 600_ms, 1.0, 0.0060, 0.05, 0.04);
+// pros::delay(200);
+// Noslackmove(2.3, 50);
+// pros::delay(700);
+// //shoot 2 bals to oppo field
+// FwVelocitySet(570, 1);
+// Noslackmove(-0.7, 30);
+// PIDGyroTurn(31.5, 1000_ms, 1.0, 0.0050, 0.05, 0.04);
+// shoot1Ball();
+// FwVelocitySet(520, 1);
+// pros::delay(1000);
+// shoot1Ball();
+
 ////////////////////////////Reference stuff///////////////////////////////////////////////////////////////////////////////////////////////////////////
+  //swingTurn(200, 0);
   //FwVelocitySet(490, 1);
   // pros::delay(500);
   // intake.moveVoltage(-12000);
@@ -129,7 +242,9 @@ FwVelocitySet(0, 1);
   // driveController.moveDistance(-1_ft);    //move
   // driveController.turnAngle(90_deg);        //turn
   // driveController.setMaxVoltage(7000);      //set max Voltage of controller
-  // PIDGyroTurn(150, 600_ms, 1.0, 0.0065, 0.06, 0.05);
+
+  //PIDGyroTurn(92.72, 600_ms, 1.0, 0.0060, 0.06, 0.04);
+
   // state != state;                           //flip bool for pneumatics
   // sensor.set_value(state);                  //set piston va
   // rotatorController.setTarget(180_deg);     //flip intake

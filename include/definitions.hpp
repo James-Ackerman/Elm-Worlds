@@ -56,7 +56,9 @@ inline auto driveController = ChassisControllerFactory::create(
    speedTrans,
    {WHEEL_DIAMETER, CHASSIS_WIDTH}
   );
-
+inline auto driveControllerR = AsyncControllerFactory::posIntegrated(baseR);                     //Controls right side of chassis. To be used for braking that specific side
+inline auto driveControllerL = AsyncControllerFactory::posIntegrated(baseL);                     //Controls left side of chassis. To be used for braking that specific side
+inline auto descorerController = AsyncControllerFactory::posIntegrated(DESCORER_MOTOR);
 // inline auto profileController = AsyncControllerFactory::motionProfile(
 //     3,     // Maximum linear velocity of the Chassis in m/s
 //     1.45,  // Maximum linear acceleration of the Chassis in m/s/s
@@ -74,11 +76,6 @@ inline Motor intake(INTAKE_MOTOR);             //motor on INTAKE_MOTOR port
 inline Motor roller(ROLLER_MOTOR);
 inline Motor descorer(DESCORER_MOTOR);
 inline Motor indexer(INDEXER_MOTOR);           //motor on INDEXER_MOTOR port
-//TODO: if velIntegrated doesn't work, use posIntegrated
-//TODO: use {DRIVE_MOTOR_RIGHT_1, DRIVE_MOTOR_RIGHT_2, DRIVE_MOTOR_RIGHT_3} etc if baseR/L doesnt work
-inline auto driveControllerR = AsyncControllerFactory::velIntegrated(baseR);                     //Controls right side of chassis. To be used for braking that specific side
-inline auto driveControllerL = AsyncControllerFactory::velIntegrated(baseL);                     //Controls left side of chassis. To be used for braking that specific side
-inline auto descorerController = AsyncControllerFactory::posIntegrated(DESCORER_MOTOR);
 //Flywheel Global Variables. Each explained in definitions.cpp
 const int FW_LOOP_SPEED = 20;
 const int FW_MAX_POWER  = 12000;
@@ -103,7 +100,7 @@ void distancePath(float);
 void anglePath(float);
 void Noslackmove(float, float);
 void Noslackturn(float, float);
-void NoslackturnGyro(float, float, float);
+void NoslackturnGyro(float, float, float, float);
 void PIDGyroTurn( float, QTime, float, float, float, float);
 void alignWithLine(int, int, int);
 void alignStep(int,int);
@@ -111,7 +108,7 @@ void shoot1Ball();
 void shoot1BallWait();
 void shoot2Balls();
 void shoot2BallsWait();
-
+void swingTurn(int, int);
 
 inline ControllerButton RightBumperUP(ControllerDigital::R1);
 inline ControllerButton RightBumperDOWN(ControllerDigital::R2);
