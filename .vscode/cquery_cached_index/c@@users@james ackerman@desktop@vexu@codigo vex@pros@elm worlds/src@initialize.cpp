@@ -11,6 +11,7 @@ void initialize() {
 	pros::lcd::set_text(7, "INITIALIZE");
 	linetrackerL.calibrate();            //these used to be in opcontrol void
 	linetrackerR.calibrate();
+	pros::delay(200);
 	gyro1.get();
   gyro2.get();
   pros::delay(3000);
