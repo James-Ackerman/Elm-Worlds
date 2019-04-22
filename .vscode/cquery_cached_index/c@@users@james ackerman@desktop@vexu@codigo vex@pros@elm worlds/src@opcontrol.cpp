@@ -41,6 +41,7 @@ void opcontrol()
             descorerController.flipDisable();
           }
           descorer.moveVoltage(12000*controller.getAnalog(ControllerAnalog::rightY));
+        descorerController.setMaxVelocity(200);
         }
         else if (descorerController.isDisabled() && abs(controller.getAnalog(ControllerAnalog::rightY)) <= 0.5)
         {
@@ -48,6 +49,7 @@ void opcontrol()
         }
      if (ButtonY.changedToPressed())      //Press button to go to raise lift to height
       {
+        descorerController.setMaxVelocity(70);
         if(descorerController.isDisabled())
         {descorerController.flipDisable();}
         descorerController.setTarget(HOLD_HEIGHT);

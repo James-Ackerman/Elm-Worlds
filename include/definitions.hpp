@@ -59,12 +59,13 @@ inline auto driveController = ChassisControllerFactory::create(
 inline auto driveControllerR = AsyncControllerFactory::posIntegrated(baseR);                     //Controls right side of chassis. To be used for braking that specific side
 inline auto driveControllerL = AsyncControllerFactory::posIntegrated(baseL);                     //Controls left side of chassis. To be used for braking that specific side
 inline auto descorerController = AsyncControllerFactory::posIntegrated(DESCORER_MOTOR);
-// inline auto profileController = AsyncControllerFactory::motionProfile(
-//     3,     // Maximum linear velocity of the Chassis in m/s
-//     1.45,  // Maximum linear acceleration of the Chassis in m/s/s
-//     9.7    // Maximum linear jerk of the Chassis in m/s/s/s
-//     driveController // Chassis Controller
-//   );
+
+inline auto profileController = AsyncControllerFactory::motionProfile(
+    1.5,     // Maximum linear velocity of the Chassis in m/s
+    1.2,  // Maximum linear acceleration of the Chassis in m/s/s
+    8,    // Maximum linear jerk of the Chassis in m/s/s/s
+    driveController // Chassis Controller
+  );
 
 
 //Individual motor definitions (for easy voltage control)
@@ -77,7 +78,7 @@ inline Motor roller(ROLLER_MOTOR);
 inline Motor descorer(DESCORER_MOTOR);
 inline Motor indexer(INDEXER_MOTOR);           //motor on INDEXER_MOTOR port
 //Flywheel Global Variables. Each explained in definitions.cpp
-const int FW_LOOP_SPEED = 20;
+const int FW_LOOP_SPEED = 15;
 const int FW_MAX_POWER  = 12000;
 extern float           motor_velocity;
 extern long            target_velocity;
@@ -109,7 +110,7 @@ void shoot1BallWait();
 void shoot2Balls();
 void shoot2BallsWait();
 void swingTurn(int, int);
-
+void moveDistance(float, bool);
 inline ControllerButton RightBumperUP(ControllerDigital::R1);
 inline ControllerButton RightBumperDOWN(ControllerDigital::R2);
 inline ControllerButton LeftBumperUP(ControllerDigital::L1);

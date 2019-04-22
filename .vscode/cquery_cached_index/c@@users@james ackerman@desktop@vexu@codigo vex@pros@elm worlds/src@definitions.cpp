@@ -173,17 +173,18 @@ void PIDGyroTurn(float target, QTime waitTime, float maxPower = 0.8, float Kp = 
    driveController.stop();
  }
 
-
-//Set distance to travel for profile controller
- // void distancePath(float distance)
- // {
- //   profileController.generatePath({
- //     Point{0_ft, 0_ft, 0_deg},  // Profile starting position, this will normally be (0, 0, 0)
- //     Point{distance*foot, 0_ft, 0_deg}}, // The next point in the profile, 3 feet forward
- //     "A" // Profile name
- //   );
- // }
-
+//
+// Set distance to travel for profile controller
+ void moveDistance(float distance, bool isBackwards)
+ {
+   driveController.setMaxVelocity(200);
+   profileController.generatePath({
+     Point{0_ft, 0_ft, 0_deg},  // Profile starting position, this will normally be (0, 0, 0)
+     Point{distance*foot, 0_ft, 0_deg}}, // The next point in the profile, 3 feet forward
+     "A");
+   profileController.setTarget("A", isBackwards);
+   profileController.waitUntilSettled();
+ }
 //
 //Set angle to turn for profile controller
  // void anglePath(float angle)
